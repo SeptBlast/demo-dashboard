@@ -24,3 +24,5 @@ yarn-error.log*
 src/App.test.js
 firebase-debug.log
 package-lock.json
+.firebase/*
+.dccache
