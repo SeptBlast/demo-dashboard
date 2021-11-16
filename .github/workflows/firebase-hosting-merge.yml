@@ -6,6 +6,7 @@ on:
     push:
         branches:
             - main
+            - staging
 
 jobs:
     test_and_build:
@@ -43,6 +44,28 @@ jobs:
                   repoToken: "${{ secrets.GITHUB_TOKEN }}"
                   firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_UNIFIED_MARKETING_PLATFORM }}"
                   channelId: live
+                  projectId: unified-marketing-platform
+              env:
+                  FIREBASE_CLI_PREVIEWS: hostingchannels
+
+    deploy_to_staging:
+        if: github.ref == 'refs/heads/staging'
+        needs: test_and_build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout source repository
+              uses: actions/checkout@v2
+            - name: Download build Artifacts
+              uses: actions/download-artifact@v2
+              with:
+                  name: build
+                  path: build
+            - name: Deploy to Firebase Hosting
+              uses: FirebaseExtended/action-hosting-deploy@v0
+              with:
+                  repoToken: "${{ secrets.GITHUB_TOKEN }}"
+                  firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_UNIFIED_MARKETING_PLATFORM }}"
+                  channelId: preview
                   projectId: unified-marketing-platform
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
